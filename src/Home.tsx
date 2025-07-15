@@ -166,6 +166,7 @@ function Home() {
           minWidth: 120,
           flex: 1,
           sortable: true,
+          pinned: 'left',
         })),
         ...allDates.map(date => ({
           field: date,
@@ -174,6 +175,7 @@ function Home() {
           flex: 1,
           sortable: true,
           type: 'number',
+          pinned: false,
         }))
       ];
 
@@ -244,6 +246,9 @@ function Home() {
                   pagination: {
                     paginationModel: { page: 0, pageSize: 25 },
                   },
+                  columns: {
+                    columnVisibilityModel: {},
+                  },
                 }}
                 sx={{
                   border: 0,
@@ -258,7 +263,24 @@ function Home() {
                   '& .MuiDataGrid-cell': {
                     borderColor: 'grey.200',
                   },
+                  '& .MuiDataGrid-pinnedColumns': {
+                    backgroundColor: 'grey.25',
+                    borderRight: 2,
+                    borderColor: 'primary.light',
+                  },
+                  '& .MuiDataGrid-pinnedColumnsContainer': {
+                    backgroundColor: 'background.paper',
+                    boxShadow: '2px 0 4px rgba(0,0,0,0.1)',
+                  },
+                  '& .MuiDataGrid-columnHeader--pinned': {
+                    backgroundColor: 'grey.100',
+                    fontWeight: 600,
+                  },
                 }}
+                columnBuffer={2}
+                columnThreshold={75}
+                disableColumnReorder={false}
+                disableColumnResize={false}
               />
             </Paper>
           </Box>
