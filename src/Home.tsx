@@ -166,7 +166,7 @@ function Home() {
           minWidth: 120,
           flex: 1,
           sortable: true,
-          pinned: 'left',
+          pinned: 'left' as const,
         })),
         ...allDates.map(date => ({
           field: date,
@@ -175,7 +175,6 @@ function Home() {
           flex: 1,
           sortable: true,
           type: 'number',
-          pinned: false,
         }))
       ];
 
@@ -279,8 +278,6 @@ function Home() {
                 }}
                 columnBuffer={2}
                 columnThreshold={75}
-                disableColumnReorder={false}
-                disableColumnResize={false}
               />
             </Paper>
           </Box>
