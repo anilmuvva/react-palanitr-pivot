@@ -1,0 +1,12 @@
+{
+  "foundryUrl": "https://trinity.palantirfoundry.com",
+  "site": {
+    "application": "ri.third-party-applications.main.application.d9c40c7b-f93a-4d18-aacd-5e301c56c981",
+    "directory": "./dist",
+    "autoVersion": {
+      "type": "git-describe",
+      "tagPrefix": ""
+    },
+    "uploadOnly": true
+  }
+}
