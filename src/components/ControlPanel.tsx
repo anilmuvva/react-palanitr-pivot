@@ -41,8 +41,6 @@ interface ControlPanelProps {
     pr: boolean;
   };
   setOrderDetails: (details: { sps: boolean; commit: boolean; pr: boolean }) => void;
-  dateBucket: 'daily' | 'weekly' | 'monthly';
-  setDateBucket: (bucket: 'daily' | 'weekly' | 'monthly') => void;
   onRefresh: () => void;
 }
 
@@ -55,8 +53,6 @@ export default function ControlPanel({
   setDueDate,
   orderDetails,
   setOrderDetails,
-  dateBucket,
-  setDateBucket,
   onRefresh,
 }: ControlPanelProps) {
   const handleOrderDetailChange = (type: 'sps' | 'commit' | 'pr') => {

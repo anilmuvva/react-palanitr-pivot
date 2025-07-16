@@ -42,6 +42,8 @@ interface FilterPanelProps {
   setOrderSiteValue: (value: string) => void;
   productionLine: string;
   setProductionLine: (value: string) => void;
+  dateBucket: 'daily' | 'weekly' | 'monthly';
+  setDateBucket: (bucket: 'daily' | 'weekly' | 'monthly') => void;
 }
 
 const spsStatusOptions = ['AO', 'Firm', 'Pending', 'Available', 'Reserved'];
@@ -57,6 +59,8 @@ export default function FilterPanel({
   setOrderSiteValue,
   productionLine,
   setProductionLine,
+  dateBucket,
+  setDateBucket,
 }: FilterPanelProps) {
   const handleSpsStatusChange = (event: SelectChangeEvent<string[]>) => {
     const value = event.target.value;

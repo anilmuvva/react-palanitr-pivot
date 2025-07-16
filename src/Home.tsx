@@ -222,7 +222,7 @@ function Home() {
 
   useEffect(() => {
     fetchPivotTable();
-  }, [spsStatus, startDate, dueDate, orderDetails, dateBucket]);
+  }, [partName, fileNumber, spsStatus, orderSiteValue, productionLine, scenario, startDate, dueDate, orderDetails, dateBucket]);
 
   const handleRefresh = () => {
     fetchPivotTable();
