@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Paper,
@@ -7,7 +6,6 @@ import {
   MenuItem,
   Chip,
   FormControl,
-  InputLabel,
   Select,
   OutlinedInput,
   SelectChangeEvent,

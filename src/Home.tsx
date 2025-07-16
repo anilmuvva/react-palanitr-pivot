@@ -163,18 +163,16 @@ function Home() {
         ...baseColumnOrder.map(col => ({
           field: col.field,
           headerName: col.headerName,
-          minWidth: 120,
-          flex: 1,
+          width: 120,
           sortable: true,
           pinned: 'left' as const,
         })),
         ...allDates.map(date => ({
           field: date,
           headerName: date,
-          minWidth: 120,
-          flex: 1,
+          width: 100,
           sortable: true,
-          type: 'number',
+          type: 'number' as const,
         }))
       ];
 
@@ -235,7 +233,7 @@ function Home() {
             />
 
             {/* Pivot Table */}
-            <Paper elevation={2} sx={{ height: 600, width: '100%' }}>
+            <Paper elevation={2} sx={{ height: 600, width: 1200, overflowX: 'auto' }}>
               <DataGrid
                 rows={pivotRows}
                 columns={pivotColumns}
@@ -251,6 +249,7 @@ function Home() {
                 }}
                 sx={{
                   border: 0,
+                  minWidth: 1200,
                   '& .MuiDataGrid-cell:hover': {
                     color: 'primary.main',
                   },
@@ -276,8 +275,6 @@ function Home() {
                     fontWeight: 600,
                   },
                 }}
-                columnBuffer={2}
-                columnThreshold={75}
               />
             </Paper>
           </Box>
