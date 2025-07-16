@@ -6,6 +6,7 @@ import FilterPanel from "./components/FilterPanel";
 import ControlPanel from "./components/ControlPanel";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Box, Typography, Paper } from '@mui/material';
+import dayjs from 'dayjs';
 
 function Home() {
   // Filter states
@@ -17,18 +18,45 @@ function Home() {
 
   // Control states
   const [scenario, setScenario] = useState('');
-  const [startDate, setStartDate] = useState('2025-07-15');
-  const [dueDate, setDueDate] = useState('2026-07-15');
+  const [startDate, setStartDate] = useState(dayjs().format('YYYY-MM-DD'));
+  const [dueDate, setDueDate] = useState(dayjs().add(1, 'year').format('YYYY-MM-DD'));
   const [orderDetails, setOrderDetails] = useState({
     sps: true,
     commit: true,
     pr: false,
   });
+  const [dateBucket, setDateBucket] = useState<'daily' | 'weekly' | 'monthly'>('daily');
 
   // Pivot table states
   const [pivotRows, setPivotRows] = useState<any[]>([]);
   const [pivotLoading, setPivotLoading] = useState(false);
   const [pivotColumns, setPivotColumns] = useState<GridColDef[]>([]);
+
+  // Helper function to format dates based on bucket type
+  const formatDateByBucket = (dateStr: string, bucket: 'daily' | 'weekly' | 'monthly'): string => {
+    const date = dayjs(dateStr);
+    switch (bucket) {
+      case 'weekly':
+        // Format as "Week of YYYY-MM-DD" (Monday of that week)
+        const startOfWeek = date.startOf('week');
+        return `Week of ${startOfWeek.format('YYYY-MM-DD')}`;
+      case 'monthly':
+        // Format as "YYYY-MM"
+        return date.format('YYYY-MM');
+      case 'daily':
+      default:
+        return dateStr;
+    }
+  };
+
+  // Helper function to group dates by bucket
+  const groupDatesByBucket = (dates: string[], bucket: 'daily' | 'weekly' | 'monthly'): string[] => {
+    const groupedDates = new Set<string>();
+    dates.forEach(dateStr => {
+      groupedDates.add(formatDateByBucket(dateStr, bucket));
+    });
+    return Array.from(groupedDates).sort();
+  };
 
   const fetchPivotTable = async () => {
     setPivotLoading(true);
@@ -93,9 +121,10 @@ function Home() {
         }
       }
 
-      // Pivot transformation
-      // 1. Get all unique dates
-      const allDates = Array.from(new Set(flatRows.map((r) => r.date as string))).sort();
+      // Pivot transformation with date bucketing
+      // 1. Get all unique dates and group them by bucket type
+      const allOriginalDates = Array.from(new Set(flatRows.map((r) => r.date as string))).sort();
+      const allDates = groupDatesByBucket(allOriginalDates, dateBucket);
 
       // 2. Define the desired column order and labels
       const baseColumnOrder = [
@@ -130,10 +159,14 @@ function Home() {
         if (!rowMap.has(key)) {
           rowMap.set(key, { ...JSON.parse(key), id: rowMap.size + 1 });
         }
-        // Set the quantity for this date
-        const date = row.date as string;
+        // Set the quantity for this date (grouped by bucket)
+        const originalDate = row.date as string;
+        const groupedDate = formatDateByBucket(originalDate, dateBucket);
         const quantity = (row.values && typeof row.values === 'object' && 'quantity' in row.values) ? (row.values as { quantity?: number }).quantity : null;
-        rowMap.get(key)![date] = quantity ?? null;
+        
+        // If we're grouping by week/month, we need to sum quantities for the same grouped date
+        const existingQuantity = rowMap.get(key)![groupedDate] as number || 0;
+        rowMap.get(key)![groupedDate] = (existingQuantity + (quantity ?? 0));
       });
       
       const pivotRows = Array.from(rowMap.values());
@@ -189,7 +222,7 @@ function Home() {
 
   useEffect(() => {
     fetchPivotTable();
-  }, [spsStatus, startDate, dueDate, orderDetails]);
+  }, [spsStatus, startDate, dueDate, orderDetails, dateBucket]);
 
   const handleRefresh = () => {
     fetchPivotTable();
@@ -214,6 +247,8 @@ function Home() {
             orderSiteValue={orderSiteValue}
             setOrderSiteValue={setOrderSiteValue}
             productionLine={productionLine}
+            dateBucket={dateBucket}
+            setDateBucket={setDateBucket}
             setProductionLine={setProductionLine}
           />
 
