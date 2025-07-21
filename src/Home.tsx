@@ -32,32 +32,6 @@ function Home() {
   const [pivotLoading, setPivotLoading] = useState(false);
   const [pivotColumns, setPivotColumns] = useState<GridColDef[]>([]);
 
-  // Helper function to format dates based on bucket type
-  const formatDateByBucket = (dateStr: string, bucket: 'daily' | 'weekly' | 'monthly'): string => {
-    const date = dayjs(dateStr);
-    switch (bucket) {
-      case 'weekly':
-        // Format as "Week of YYYY-MM-DD" (Monday of that week)
-        const startOfWeek = date.startOf('week');
-        return `Week of ${startOfWeek.format('YYYY-MM-DD')}`;
-      case 'monthly':
-        // Format as "YYYY-MM"
-        return date.format('YYYY-MM');
-      case 'daily':
-      default:
-        return dateStr;
-    }
-  };
-
-  // Helper function to group dates by bucket
-  const groupDatesByBucket = (dates: string[], bucket: 'daily' | 'weekly' | 'monthly'): string[] => {
-    const groupedDates = new Set<string>();
-    dates.forEach(dateStr => {
-      groupedDates.add(formatDateByBucket(dateStr, bucket));
-    });
-    return Array.from(groupedDates).sort();
-  };
-
   const fetchPivotTable = async () => {
     setPivotLoading(true);
     try {
@@ -103,7 +77,8 @@ function Home() {
         startDate: startDate,
         dueDate: dueDate,
         selectedScenarioName: scenario,
-        types: types.length > 0 ? types : ['sps', 'commit']
+        types: types.length > 0 ? types : ['sps', 'commit'],
+        grouping: dateBucket
       };
 
       const result = await client(consolidatedFunctionBackedPivotTableSPS).executeFunction(pivotParams);
@@ -121,10 +96,9 @@ function Home() {
         }
       }
 
-      // Pivot transformation with date bucketing
-      // 1. Get all unique dates and group them by bucket type
-      const allOriginalDates = Array.from(new Set(flatRows.map((r) => r.date as string))).sort();
-      const allDates = groupDatesByBucket(allOriginalDates, dateBucket);
+      // Pivot transformation
+      // 1. Get all unique dates
+      const allDates = Array.from(new Set(flatRows.map((r) => r.date as string))).sort();
 
       // 2. Define the desired column order and labels
       const baseColumnOrder = [
@@ -159,14 +133,10 @@ function Home() {
         if (!rowMap.has(key)) {
           rowMap.set(key, { ...JSON.parse(key), id: rowMap.size + 1 });
         }
-        // Set the quantity for this date (grouped by bucket)
-        const originalDate = row.date as string;
-        const groupedDate = formatDateByBucket(originalDate, dateBucket);
+        // Set the quantity for this date
+        const date = row.date as string;
         const quantity = (row.values && typeof row.values === 'object' && 'quantity' in row.values) ? (row.values as { quantity?: number }).quantity : null;
-        
-        // If we're grouping by week/month, we need to sum quantities for the same grouped date
-        const existingQuantity = rowMap.get(key)![groupedDate] as number || 0;
-        rowMap.get(key)![groupedDate] = (existingQuantity + (quantity ?? 0));
+        rowMap.get(key)![date] = quantity ?? null;
       });
       
       const pivotRows = Array.from(rowMap.values());
@@ -191,7 +161,7 @@ function Home() {
         return 0;
       });
 
-      // 4. Build columns: base columns + one column per date (header is date, value is quantity)
+      // 4. Build columns: base columns + one column per date (header is formatted date, value is quantity)
       const pivotColumns: GridColDef[] = [
         ...baseColumnOrder.map(col => ({
           field: col.field,
@@ -202,10 +172,14 @@ function Home() {
         })),
         ...allDates.map(date => ({
           field: date,
-          headerName: date,
-          width: 100,
+          headerName: dayjs(date).isValid() ? dayjs(date).format('MM/DD/YY') : date,
+          width: 110,
+          minWidth: 90,
+          maxWidth: 140,
           sortable: true,
           type: 'number' as const,
+          align: 'right' as const,
+          headerAlign: 'right' as const,
         }))
       ];
 
@@ -247,8 +221,6 @@ function Home() {
             orderSiteValue={orderSiteValue}
             setOrderSiteValue={setOrderSiteValue}
             productionLine={productionLine}
-            dateBucket={dateBucket}
-            setDateBucket={setDateBucket}
             setProductionLine={setProductionLine}
           />
 
@@ -264,13 +236,15 @@ function Home() {
               setDueDate={setDueDate}
               orderDetails={orderDetails}
               setOrderDetails={setOrderDetails}
+              dateBucket={dateBucket}
+              setDateBucket={setDateBucket}
               onRefresh={handleRefresh}
             />
 
             {/* Pivot Table */}
             <Paper elevation={2} sx={{ height: 600, width: 1200, overflowX: 'auto' }}>
               <DataGrid
-                rows={pivotRows}
+                rows={pivotRows.slice(1)} // Hide the first row
                 columns={pivotColumns}
                 loading={pivotLoading}
                 pageSizeOptions={[10, 25, 50, 100]}
@@ -282,6 +256,9 @@ function Home() {
                     columnVisibilityModel: {},
                   },
                 }}
+                getRowClassName={(params) =>
+                  params.indexRelativeToCurrentPage % 2 === 0 ? 'grey-row' : ''
+                }
                 sx={{
                   border: 0,
                   minWidth: 1200,
@@ -308,6 +285,9 @@ function Home() {
                   '& .MuiDataGrid-columnHeader--pinned': {
                     backgroundColor: 'grey.100',
                     fontWeight: 600,
+                  },
+                  '& .grey-row': {
+                    backgroundColor: 'grey.100',
                   },
                 }}
               />

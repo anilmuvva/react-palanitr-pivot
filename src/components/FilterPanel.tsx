@@ -42,8 +42,6 @@ interface FilterPanelProps {
   setOrderSiteValue: (value: string) => void;
   productionLine: string;
   setProductionLine: (value: string) => void;
-  dateBucket: 'daily' | 'weekly' | 'monthly';
-  setDateBucket: (bucket: 'daily' | 'weekly' | 'monthly') => void;
 }
 
 const spsStatusOptions = ['AO', 'Firm', 'Pending', 'Available', 'Reserved'];
@@ -59,8 +57,6 @@ export default function FilterPanel({
   setOrderSiteValue,
   productionLine,
   setProductionLine,
-  dateBucket,
-  setDateBucket,
 }: FilterPanelProps) {
   const handleSpsStatusChange = (event: SelectChangeEvent<string[]>) => {
     const value = event.target.value;
@@ -103,22 +99,24 @@ export default function FilterPanel({
 
       <FilterSection>
         <FilterLabel>SPS STATUS</FilterLabel>
-        <FormControl fullWidth size="small">
-          <Select
-            multiple
-            value={spsStatus}
-            onChange={handleSpsStatusChange}
-            input={<OutlinedInput />}
-            displayEmpty
-            renderValue={() => null}
-          >
-            {spsStatusOptions.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Add status and press Enter or comma..."
+          variant="outlined"
+          value=""
+          onKeyDown={e => {
+            const input = (e.target as HTMLInputElement);
+            if ((e.key === 'Enter' || e.key === ',') && input.value.trim()) {
+              e.preventDefault();
+              const newValue = input.value.trim().replace(/,$/, '');
+              if (newValue && !spsStatus.includes(newValue)) {
+                setSpsStatus([...spsStatus, newValue]);
+              }
+              input.value = '';
+            }
+          }}
+        />
         <ChipContainer>
           {spsStatus.map((status) => (
             <Chip
