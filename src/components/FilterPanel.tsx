@@ -3,12 +3,6 @@ import {
   Paper,
   Typography,
   TextField,
-  MenuItem,
-  Chip,
-  FormControl,
-  Select,
-  OutlinedInput,
-  SelectChangeEvent,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
@@ -24,13 +18,6 @@ const FilterLabel = styled(Typography)(({ theme }) => ({
   textTransform: 'uppercase',
 }));
 
-const ChipContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: theme.spacing(0.5),
-  marginTop: theme.spacing(1),
-}));
-
 interface FilterPanelProps {
   partName: string;
   setPartName: (value: string) => void;
@@ -44,8 +31,6 @@ interface FilterPanelProps {
   setProductionLine: (value: string) => void;
 }
 
-const spsStatusOptions = ['AO', 'Firm', 'Pending', 'Available', 'Reserved'];
-
 export default function FilterPanel({
   partName,
   setPartName,
@@ -58,14 +43,20 @@ export default function FilterPanel({
   productionLine,
   setProductionLine,
 }: FilterPanelProps) {
-  const handleSpsStatusChange = (event: SelectChangeEvent<string[]>) => {
+  const handleSpsStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
-    setSpsStatus(typeof value === 'string' ? value.split(',') : value);
+    if (value.trim() === '') {
+      // If empty, reset to default values
+      setSpsStatus(['AO', 'Firm', 'Pending', 'Available', 'Reserved']);
+    } else {
+      // Split by comma and trim whitespace
+      const statusArray = value.split(',').map(status => status.trim()).filter(status => status !== '');
+      setSpsStatus(statusArray);
+    }
   };
 
-  const handleDeleteChip = (chipToDelete: string) => {
-    setSpsStatus(spsStatus.filter((chip) => chip !== chipToDelete));
-  };
+  // Convert array back to comma-separated string for display
+  const spsStatusDisplayValue = spsStatus.join(', ');
 
   return (
     <Paper elevation={1} sx={{ p: 2, width: 300, height: 'fit-content' }}>
@@ -102,33 +93,12 @@ export default function FilterPanel({
         <TextField
           fullWidth
           size="small"
-          placeholder="Add status and press Enter or comma..."
+          placeholder="Enter comma-separated values (e.g., AO, Firm, Pending)"
           variant="outlined"
-          value=""
-          onKeyDown={e => {
-            const input = (e.target as HTMLInputElement);
-            if ((e.key === 'Enter' || e.key === ',') && input.value.trim()) {
-              e.preventDefault();
-              const newValue = input.value.trim().replace(/,$/, '');
-              if (newValue && !spsStatus.includes(newValue)) {
-                setSpsStatus([...spsStatus, newValue]);
-              }
-              input.value = '';
-            }
-          }}
+          value={spsStatusDisplayValue}
+          onChange={handleSpsStatusChange}
+          helperText="Leave empty to use default values (AO, Firm, Pending, Available, Reserved)"
         />
-        <ChipContainer>
-          {spsStatus.map((status) => (
-            <Chip
-              key={status}
-              label={status}
-              onDelete={() => handleDeleteChip(status)}
-              size="small"
-              color="primary"
-              variant="outlined"
-            />
-          ))}
-        </ChipContainer>
       </FilterSection>
 
       <FilterSection>

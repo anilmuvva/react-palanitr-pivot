@@ -111,7 +111,7 @@ export default function ControlPanel({
             />
           </Box>
 
-          {/* Date Inputs */}
+          {/* Date Inputs - Both in same row */}
           <ControlSection>
             <Typography variant="body2" color="text.secondary" sx={{ minWidth: 80 }}>
               START DATE
@@ -124,9 +124,6 @@ export default function ControlPanel({
               }}
               slotProps={{ textField: { size: 'small', sx: { minWidth: 150 } } }}
             />
-          </ControlSection>
-
-          <ControlSection>
             <Typography variant="body2" color="text.secondary" sx={{ minWidth: 80 }}>
               DUE DATE
             </Typography>
