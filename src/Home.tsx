@@ -54,6 +54,9 @@ const BASE_COLUMN_ORDER = [
 ] as const;
 
 function Home() {
+  // Filter panel collapse state
+  const [filterPanelOpen, setFilterPanelOpen] = useState(true);
+
   // Filter states
   const [filters, setFilters] = useState<FilterOptions>({
     partName: [],
@@ -452,37 +455,50 @@ function Home() {
 
   return (
     <Layout>
-      <Box sx={{ padding: 3, width: '100vw', minHeight: '100vh', boxSizing: 'border-box', overflow: 'hidden' }}>
+      <Box sx={{ width: '100vw', minHeight: '100vh', boxSizing: 'border-box', overflow: 'hidden' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           SPS Scheduling Dashboard
         </Typography>
-        <Box sx={{ display: 'flex', gap: 3, width: '100%', height: 'calc(100vh - 100px)' }}>
+        <Box sx={{ display: 'flex', width: '100%', height: 'calc(100vh - 80px)' }}>
           {/* Collapsible Filter Panel */}
-          <Box sx={{ minWidth: 320, maxWidth: 400, height: '100%' }}>
-            <Paper elevation={2} sx={{ height: '100%', overflow: 'hidden' }}>
-              <CollapsibleFilterPanel
-                partName={filters.partName}
-                setPartName={filterHandlers.setPartName}
-                partNameOptions={filterOptions.partName}
-                fileNumber={filters.fileNumber}
-                setFileNumber={filterHandlers.setFileNumber}
-                fileNumberOptions={filterOptions.fileNumber}
-                spsPart={filters.spsPart}
-                setSpsPart={filterHandlers.setSpsPart}
-                spsPartOptions={filterOptions.spsPart}
-                spsStatus={filters.spsStatus}
-                setSpsStatus={filterHandlers.setSpsStatus}
-                spsStatusOptions={filterOptions.spsStatus}
-                orderSiteValue={orderSiteValue}
-                setOrderSiteValue={setOrderSiteValue}
-                productionLine={filters.productionLine}
-                setProductionLine={filterHandlers.setProductionLine}
-                productionLineOptions={filterOptions.productionLine}
-              />
-            </Paper>
+          <Box sx={{ 
+            width: filterPanelOpen ? 320 : 0, 
+            transition: 'width 0.3s ease-in-out',
+            overflow: 'hidden',
+            height: '100%'
+          }}>
+            <CollapsibleFilterPanel
+              open={filterPanelOpen}
+              onToggle={setFilterPanelOpen}
+              partName={filters.partName}
+              setPartName={filterHandlers.setPartName}
+              partNameOptions={filterOptions.partName}
+              fileNumber={filters.fileNumber}
+              setFileNumber={filterHandlers.setFileNumber}
+              fileNumberOptions={filterOptions.fileNumber}
+              spsPart={filters.spsPart}
+              setSpsPart={filterHandlers.setSpsPart}
+              spsPartOptions={filterOptions.spsPart}
+              spsStatus={filters.spsStatus}
+              setSpsStatus={filterHandlers.setSpsStatus}
+              spsStatusOptions={filterOptions.spsStatus}
+              orderSiteValue={orderSiteValue}
+              setOrderSiteValue={setOrderSiteValue}
+              productionLine={filters.productionLine}
+              setProductionLine={filterHandlers.setProductionLine}
+              productionLineOptions={filterOptions.productionLine}
+            />
           </Box>
           {/* Main Content */}
-          <Box sx={{ flex: 1, height: '100%', minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+          <Box sx={{ 
+            flex: 1, 
+            height: '100%', 
+            minWidth: 0, 
+            display: 'flex', 
+            flexDirection: 'column',
+            transition: 'margin-left 0.3s ease-in-out',
+            marginLeft: filterPanelOpen ? '16px' : '0px'
+          }}>
             {/* Control Panel */}
             <ControlPanel
               scenario={scenario}
@@ -498,7 +514,14 @@ function Home() {
               onRefresh={handleRefresh}
             />
             {/* Pivot Table */}
-            <Paper elevation={2} sx={{ flex: 1, width: '100%', minWidth: 0, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
+            <Paper elevation={2} sx={{ 
+              flex: 1, 
+              width: '100%', 
+              minWidth: 0, 
+              overflow: 'hidden', 
+              display: 'flex', 
+              flexDirection: 'column' 
+            }}>
               <DataGrid
                 {...dataGridProps}
                 editMode="cell"
@@ -506,9 +529,11 @@ function Home() {
                 processRowUpdate={processRowUpdateHandler}
                 sx={{
                   border: 0,
-                  minWidth: 1200,
                   width: '100%',
                   height: '100%',
+                  '& .MuiDataGrid-virtualScroller': {
+                    overflowX: 'auto',
+                  },
                   '& .MuiDataGrid-cell:hover': {
                     color: 'primary.main',
                   },

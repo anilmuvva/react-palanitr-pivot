@@ -59,11 +59,7 @@ export default function FilterPanel({
 
 
   return (
-    <Paper elevation={1} sx={{ p: 2, width: 320, height: 'fit-content' }}>
-      <Typography variant="h6" sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-        🔍 Filters
-      </Typography>
-
+    <Box>
       <FilterSection>
         <FilterLabel>PART NAME</FilterLabel>
         <Autocomplete
@@ -128,6 +124,6 @@ export default function FilterPanel({
           )}
         />
       </FilterSection>
-    </Paper>
+    </Box>
   );
 }

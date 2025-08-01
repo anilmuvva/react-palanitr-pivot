@@ -64,7 +64,7 @@ export default function ControlPanel({
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Paper elevation={1} sx={{ p: 2, mb: 2 }}>
+      <Paper elevation={1} sx={{ p: 2, mb: 2, mx: 2 }}>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
           {/* Scenario Selection */}
           {/* <ControlSection>
