@@ -455,17 +455,30 @@ function Home() {
 
   return (
     <Layout>
-      <Box sx={{ width: '100vw', minHeight: '100vh', boxSizing: 'border-box', overflow: 'hidden' }}>
+      <Box sx={{ 
+        width: '100vw', 
+        height: '100vh', 
+        boxSizing: 'border-box', 
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
         <Typography variant="h4" component="h1" gutterBottom>
           SPS Scheduling Dashboard
         </Typography>
-        <Box sx={{ display: 'flex', width: '100%', height: 'calc(100vh - 80px)' }}>
+        <Box sx={{ 
+          display: 'flex', 
+          width: '100%', 
+          height: 'calc(100vh - 80px)',
+          overflow: 'hidden'
+        }}>
           {/* Collapsible Filter Panel */}
           <Box sx={{ 
             width: filterPanelOpen ? 320 : 0, 
             transition: 'width 0.3s ease-in-out',
             overflow: 'hidden',
-            height: '100%'
+            height: '100%',
+            flexShrink: 0
           }}>
             <CollapsibleFilterPanel
               open={filterPanelOpen}
@@ -493,26 +506,27 @@ function Home() {
           <Box sx={{ 
             flex: 1, 
             height: '100%', 
-            minWidth: 0, 
+            minWidth: 0,
+            overflow: 'hidden',
             display: 'flex', 
             flexDirection: 'column',
-            transition: 'margin-left 0.3s ease-in-out',
-            marginLeft: filterPanelOpen ? '16px' : '0px'
           }}>
             {/* Control Panel */}
-            <ControlPanel
-              scenario={scenario}
-              setScenario={setScenario}
-              startDate={startDate}
-              setStartDate={setStartDate}
-              dueDate={dueDate}
-              setDueDate={setDueDate}
-              orderDetails={orderDetails}
-              setOrderDetails={setOrderDetails}
-              dateBucket={dateBucket}
-              setDateBucket={setDateBucket}
-              onRefresh={handleRefresh}
-            />
+            <Box sx={{ flexShrink: 0 }}>
+              <ControlPanel
+                scenario={scenario}
+                setScenario={setScenario}
+                startDate={startDate}
+                setStartDate={setStartDate}
+                dueDate={dueDate}
+                setDueDate={setDueDate}
+                orderDetails={orderDetails}
+                setOrderDetails={setOrderDetails}
+                dateBucket={dateBucket}
+                setDateBucket={setDateBucket}
+                onRefresh={handleRefresh}
+              />
+            </Box>
             {/* Pivot Table */}
             <Paper elevation={2} sx={{ 
               flex: 1, 
@@ -520,7 +534,8 @@ function Home() {
               minWidth: 0, 
               overflow: 'hidden', 
               display: 'flex', 
-              flexDirection: 'column' 
+              flexDirection: 'column',
+              margin: 0
             }}>
               <DataGrid
                 {...dataGridProps}
@@ -531,9 +546,6 @@ function Home() {
                   border: 0,
                   width: '100%',
                   height: '100%',
-                  '& .MuiDataGrid-virtualScroller': {
-                    overflowX: 'auto',
-                  },
                   '& .MuiDataGrid-cell:hover': {
                     color: 'primary.main',
                   },

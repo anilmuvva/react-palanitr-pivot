@@ -37,14 +37,15 @@ const CollapsibleFilterPanel: React.FC<CollapsibleFilterPanelProps> = ({
       {/* Collapsed state - show only toggle button */}
       {!open && (
         <Box sx={{ 
-          position: 'fixed', 
+          position: 'absolute', 
           left: 0, 
           top: '50%', 
           transform: 'translateY(-50%)',
           zIndex: 1000,
           backgroundColor: 'background.paper',
           borderRadius: '0 8px 8px 0',
-          boxShadow: 2
+          boxShadow: 2,
+          width: 'auto'
         }}>
           <Tooltip title="Show Filters" placement="right">
             <IconButton 
@@ -66,7 +67,8 @@ const CollapsibleFilterPanel: React.FC<CollapsibleFilterPanelProps> = ({
         <Paper elevation={2} sx={{ 
           height: '100%', 
           overflow: 'hidden', 
-          width: 320,
+          width: '100%',
+          minWidth: 320,
           position: 'relative'
         }}>
           <Box sx={{ 
