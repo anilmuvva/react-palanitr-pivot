@@ -1,7 +1,7 @@
-import palantirLogo from "/palantir.svg";
-import reactLogo from "/react.svg";
+//import palantirLogo from "/palantir.svg";
+//import reactLogo from "/react.svg";
 import React from "react";
-import css from "./Layout.module.css";
+//import css from "./Layout.module.css";
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -10,7 +10,7 @@ interface LayoutProps {
 function Layout({ children }: LayoutProps) {
   return (
     <>
-      <div>
+      {/* <div>
         <a
           href="https://www.palantir.com/docs/foundry/ontology-sdk/overview/"
           target="_blank"
@@ -21,7 +21,7 @@ function Layout({ children }: LayoutProps) {
         <a href="https://react.dev" target="_blank" rel="noopener noreferrer">
           <img src={reactLogo} className={css.logo} alt="React logo" />
         </a>
-      </div>
+      </div> */}
       {children}
     </>
   );

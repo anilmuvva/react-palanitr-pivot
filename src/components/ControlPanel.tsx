@@ -6,9 +6,7 @@ import {
   FormControlLabel,
   Checkbox,
   Button,
-  Chip,
-  Select,
-  FormControl
+  Select
 } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -23,10 +21,10 @@ const ControlSection = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-const StatusChip = styled(Chip)(() => ({
-  fontSize: '0.75rem',
-  height: '24px',
-}));
+// const StatusChip = styled(Chip)(() => ({
+//   fontSize: '0.75rem',
+//   height: '24px',
+// }));
 
 interface ControlPanelProps {
   scenario: string;
@@ -41,14 +39,12 @@ interface ControlPanelProps {
     pr: boolean;
   };
   setOrderDetails: (details: { sps: boolean; commit: boolean; pr: boolean }) => void;
-  dateBucket: 'daily' | 'weekly' | 'monthly';
-  setDateBucket: (bucket: 'daily' | 'weekly' | 'monthly') => void;
+  dateBucket: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  setDateBucket: (bucket: 'daily' | 'weekly' | 'monthly' | 'yearly') => void;
   onRefresh: () => void;
 }
 
 export default function ControlPanel({
-  scenario,
-  setScenario,
   startDate,
   setStartDate,
   dueDate,
@@ -71,7 +67,7 @@ export default function ControlPanel({
       <Paper elevation={1} sx={{ p: 2, mb: 2 }}>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
           {/* Scenario Selection */}
-          <ControlSection>
+          {/* <ControlSection>
             <Typography variant="body2" color="text.secondary" sx={{ minWidth: 120 }}>
               SELECT SCENARIO
             </Typography>
@@ -87,10 +83,10 @@ export default function ControlPanel({
                 <MenuItem value="DEV">DEV</MenuItem>
               </Select>
             </FormControl>
-          </ControlSection>
+          </ControlSection> */}
 
           {/* Status Information */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+          {/* <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Typography variant="caption" color="text.secondary">
                 Latest Shipped LX
@@ -109,7 +105,7 @@ export default function ControlPanel({
               variant="outlined" 
               size="small"
             />
-          </Box>
+          </Box> */}
 
           {/* Date Inputs - Both in same row */}
           <ControlSection>
@@ -192,12 +188,13 @@ export default function ControlPanel({
             <Select
               size="small"
               value={dateBucket}
-              onChange={(e) => setDateBucket(e.target.value as 'daily' | 'weekly' | 'monthly')}
+              onChange={(e) => setDateBucket(e.target.value as 'daily' | 'weekly' | 'monthly' | 'yearly')}
               sx={{ ml: 'auto', minWidth: 100 }}
             >
               <MenuItem value="daily">daily</MenuItem>
               <MenuItem value="weekly">weekly</MenuItem>
               <MenuItem value="monthly">monthly</MenuItem>
+              <MenuItem value="yearly">yearly</MenuItem>
             </Select>
           </Box>
         </Box>
